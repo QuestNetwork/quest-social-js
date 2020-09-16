@@ -1,5 +1,5 @@
 {
-  "name": "@questnetwork/quest-profile-js",
+  "name": "@questnetwork/quest-social-js",
   "version": "0.9.3",
   "license": "AGPL-3.0",
   "author": "StationedInTheField",
@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/QuestNetwork/quest-social-js.git"
   },
-  "main": "profile.js",
+  "main": "social.js",
   "engines": {
     "node": ">=10"
   },
