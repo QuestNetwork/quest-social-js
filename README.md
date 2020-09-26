@@ -13,7 +13,7 @@ See [QD Social TS](https://github.com/QuestNetwork/qd-social-ts) the [Features](
 
 ## Installation & Usage
 ```
-npm install @questnetwork/quest-bee-js@0.9.2
+npm install @questnetwork/quest-social-js@0.9.3
 ```
 
 ## Support Us
