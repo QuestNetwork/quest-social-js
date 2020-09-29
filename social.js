@@ -32,14 +32,6 @@ export class QuestSocial {
     this.crypto = new NativeCrypto();
 
 
-    var userAgent = navigator.userAgent.toLowerCase();
-    if (userAgent.indexOf(' electron/') > -1) {
-      this.isElectron = true;
-      this.fs = this.electron.remote.require('fs');
-      this.configPath = this.electron.remote.app.getPath('userData');
-      this.configFilePath = this.configPath + "/user.qcprofile";
-    }
-
     return true;
   }
 
