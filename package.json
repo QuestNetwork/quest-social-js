@@ -15,7 +15,7 @@
     "build": "rm -rf dist && babel . --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
     },
   "dependencies": {
-    "rxjs": "^6.6.2",
+    "rxjs": "6.6.3",
     "uuid": "^8.2.0",
     "@questnetwork/quest-crypto-js": "../quest-crypto-js"
   },
