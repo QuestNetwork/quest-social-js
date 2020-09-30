@@ -249,4 +249,23 @@ export class QuestSocial {
   }
 
 
+
+  search(phrase){
+    let allProfiles = this.bee.comb.search("/social/profile/");
+    let results = [];
+    for(let p of allProfiles){
+      if(p['alias'].indexOf(phrase) > -1 || p['fullName'].indexOf(phrase) > -1 || p['about'].indexOf(phrase) > -1){
+        results.push(p);
+      }
+    }
+
+    for(let i=0;i<results.length;i++){
+      results[i]['isFavorite'] = this.isFavorite(results[i]['key']['pubKey']);
+      results[i]['isRequestedFavorite'] = this.isRequestedFavorite(results[i]['key']['pubKey']);
+    }
+
+    return results;
+  }
+
+
 }
