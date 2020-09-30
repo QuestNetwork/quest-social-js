@@ -17,7 +17,7 @@ npm install @questnetwork/quest-social-js@0.9.3
 ```
 
 ## Support Us
-This project is a lot of work and unfortunately we need to eat food (ツ)
+Please consider supporting us, so that we can build a non-profit for this project (ツ)
 
 | Ethereum| Bitcoin |
 |---|---|
