@@ -30,7 +30,7 @@ export class QuestSocial {
     this.bee = config['dependencies']['bee'];
     this.dolphin = config['dependencies']['dolphin'];
     this.crypto = new NativeCrypto();
-
+    this.request = config['dependencies']['request'];
 
     return true;
   }
@@ -97,11 +97,9 @@ export class QuestSocial {
    }
 
  async verify(signedObj){
-   // let pubKeys = await this.getChannelPubKeyForSocialId(signedObj['pubKey']);
-   // for(let pK of pubKeys){
-   // TO DO qOS Faux Requests
-   //   if(await this.q.os.request(pK['channel'], { path: '/social/verify', message: signedObj, type: "PEER_VERIFY_QR", toChannelPubKey: pk['channelPubKey']  } ) ){
-   //       this.bee.comb.add('/social/verified',signedObj['pubKey']);
+
+   //   if(await this.request.post(pK['channel'], { path: '/social/verify', message: signedObj, type: "PEER_VERIFY_QR", toSocialPubKey: signedObj['pubKey']  } ) ){
+   //       this.bee.comb.add('/social/verified',signedObj['pubKey
   //      return true;
 //        }
    // }
