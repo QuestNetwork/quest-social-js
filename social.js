@@ -94,7 +94,7 @@ export class QuestSocial {
      this.bee.comb.set("/social/profile/"+profileId,profileObject);
      this.bee.comb.set("/social/sharedWith",[]);
      this.dolphin.clearSharedWith();
-
+   }
 
  async verify(signedObj){
    // let pubKeys = await this.getChannelPubKeyForSocialId(signedObj['pubKey']);
