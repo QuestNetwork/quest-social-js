@@ -102,9 +102,9 @@ export class QuestSocial {
     if(response['message']['isValid']){
       return true;
     }
-   }
+   
    //timed out
-   return false
+   return false;
 
  }
 
