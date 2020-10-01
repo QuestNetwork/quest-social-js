@@ -74,12 +74,12 @@ export class QuestSocial {
   }
 
   async getVerificationQR(){
-    let p = await this.q.os.social.getMyProfile();
+    let p = await this.getMyProfile();
     let privKey = p['key']['privKey'];
 
     let verificationQRUUID = uuidv4();
     this.bee.comb.add("/social/verificationCodes/"+this.pubKey,verificationQRUUID);
-    return  JSON.stringify(await this.q.os.crypto.ec.sign({ pubKey: this.pubKey, random: verificationQRUUID } ,privKey));
+    return  JSON.stringify(await this.crypto.ec.sign({ pubKey: this.pubKey, random: verificationQRUUID } ,privKey));
   }
 
 
