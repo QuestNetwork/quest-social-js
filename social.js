@@ -101,12 +101,19 @@ export class QuestSocial {
    // for(let pK of pubKeys){
    // TO DO qOS Faux Requests
    //   if(await this.q.os.request(pK['channel'], { path: '/social/verify', message: signedObj, type: "PEER_VERIFY_QR", toChannelPubKey: pk['channelPubKey']  } ) ){
+   //       this.bee.comb.add('/social/verified',signedObj['pubKey']);
   //      return true;
 //        }
    // }
-   // }
+   //
    //add to local list to know it's pending
-   //return false
+   //t
+   return false
+
+ }
+
+ isVerified(pubKey){
+   return this.bee.comb.in('/social/verified',pubKey);
  }
 
   async getProfile(profileId = 'NoProfileSelected'){
