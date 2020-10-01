@@ -76,10 +76,12 @@ export class QuestSocial {
   async getVerificationQR(){
     let p = await this.getMyProfile();
     let privKey = p['key']['privKey'];
+    let pubKey = p['key']['privKey'];
+
 
     let verificationQRUUID = uuidv4();
-    this.bee.comb.add("/social/verificationCodes/"+this.pubKey,verificationQRUUID);
-    return  JSON.stringify(await this.crypto.ec.sign({ pubKey: this.pubKey, random: verificationQRUUID } ,privKey));
+    this.bee.comb.add("/social/verificationCodes/"+pubKey,verificationQRUUID);
+    return  JSON.stringify(await this.crypto.ec.sign({ pubKey: pubKey, random: verificationQRUUID } ,privKey));
   }
 
 
@@ -102,7 +104,7 @@ export class QuestSocial {
     if(response['message']['isValid']){
       return true;
     }
-   
+
    //timed out
    return false;
 
