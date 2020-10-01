@@ -96,13 +96,17 @@ export class QuestSocial {
      this.dolphin.clearSharedWith();
 
 
- verify(signedObj){
+ async verify(signedObj){
    // let pubKeys = await this.getChannelPubKeyForSocialId(signedObj['pubKey']);
    // for(let pK of pubKeys){
-   //   await this.q.os.request(pK['channel'], { path: '/social/verify', message: signedObj, type: "PEER_VERIFY_QR", toChannelPubKey: pk['channelPubKey']  } )
+   // TO DO qOS Faux Requests
+   //   if(await this.q.os.request(pK['channel'], { path: '/social/verify', message: signedObj, type: "PEER_VERIFY_QR", toChannelPubKey: pk['channelPubKey']  } ) ){
+  //      return true;
+//        }
    // }
-
+   // }
    //add to local list to know it's pending
+   //return false
  }
 
   async getProfile(profileId = 'NoProfileSelected'){
