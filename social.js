@@ -94,6 +94,15 @@ export class QuestSocial {
      this.bee.comb.set("/social/profile/"+profileId,profileObject);
      this.bee.comb.set("/social/sharedWith",[]);
      this.dolphin.clearSharedWith();
+
+
+ verify(signedObj){
+   // let pubKeys = await this.getChannelPubKeyForSocialId(signedObj['pubKey']);
+   // for(let pK of pubKeys){
+   //   await this.q.os.request(pK['channel'], { path: '/social/verify', message: signedObj, type: "PEER_VERIFY_QR", toChannelPubKey: pk['channelPubKey']  } )
+   // }
+
+   //add to local list to know it's pending
  }
 
   async getProfile(profileId = 'NoProfileSelected'){
