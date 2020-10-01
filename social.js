@@ -98,9 +98,10 @@ export class QuestSocial {
 
  async verify(signedObj){
 
-    if(await this.request.post(pK['channel'], { path: '/social/verify', message: signedObj, toSocialPubKey: signedObj['pubKey']  } ) ){
-   //       this.bee.comb.add('/social/verified',signedObj['pubKey
+    let response = await this.request.post(pK['channel'], { path: '/social/verify', message: signedObj, toSocialPubKey: signedObj['pubKey']  } );
+    if(response['message']['isValid']){
       return true;
+    }
    }
    //timed out
    return false
