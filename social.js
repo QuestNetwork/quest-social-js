@@ -98,11 +98,33 @@ export class QuestSocial {
      this.dolphin.clearSharedWith();
    }
 
- async verify(signedObj){
 
-    let response = await this.request.post(pK['channel'], { path: '/social/verify', message: signedObj, toSocialPubKey: signedObj['pubKey']  } );
-    if(response['message']['isValid']){
-      return true;
+  async startVerificationWorker(){
+    let path = '/social/verify';
+    this.request.listen(path).subscribe( async (req) => {
+      let socialPubKey = req['message']['pubKey'];
+      let random = req['message']['random'];
+      let channel = req['channel'];
+      if(this.bee.comb.in("/social/verificationCodes/"+socialPubKey,random)){
+        let resObj = {};
+        resObj['path'] = path;
+        //prepare message
+        resObj['reqId'] = req['reqId'];
+        resObj['message'] = { permission: true, socialPubKey: socialPubKey, channelPubKey: this.dolphin.getChannelKeyChain(channel)['channelPubKey'] };
+        resObj['message'] = await this.crypto.ec.sign(resObj['message'],await this.getMyProfile()['key']['privKey']);
+        // this.bee.comb.add("/social/verified",fromSocialPubKey);
+        this.request.res(resObj);
+        this.bee.comb.removeFromComb("/social/verificationCodes/"+socialPubKey,random);
+      }
+    });
+  }
+
+ async verify(signedObj){
+   let socialPubKey = signedObj['pubKey']
+    let response = await this.request.post({ path: '/social/verify', message: signedObj, toSocialPubKey: socialPubKey  } );
+    if(typeof response['message']['permission'] === true && response['message']['channelPubKey'] == response['channelPubKey'] && await this.crypto.ec.verify(response['message'],socialPubKey)){
+        this.bee.comb.add('/social/verified',socialPubKey);
+        return true;
     }
 
    //timed out
