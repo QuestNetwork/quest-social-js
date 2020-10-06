@@ -21,18 +21,22 @@ export class PostManager {
     this.dolphin = config['dependencies']['dolphin'];
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
+    this.profile = config['dependencies']['profile'];
     return true;
   }
 
 
-  new(postObj = { content: '', socialPubKey:'' }){
+  async new(postObj = { content: '', socialPubKey:'' }){
     postObj['id'] = uuidv4();
     postObj['timestamp'] = new Date().getTime();
-    this.bee.comb.add('social/timeline/'+postObj['socialPubKey'],postObj);
+    let mp = await this.profile.getMyProfile();
+    let privKey = mp['key']['privKey'];
+    postObj = await this.crypto.ec.sign(postObj,privKey);
+    this.bee.comb.add('/social/timeline/'+postObj['socialPubKey'],postObj);
   }
 
   delete(postObj, socialPubKey){
-      this.bee.comb.removeFrom('social/timeline/'+socialPubKey,postObj);
+      this.bee.comb.removeFrom('/social/timeline/'+socialPubKey,postObj);
       return true;
   }
 

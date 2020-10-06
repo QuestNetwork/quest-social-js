@@ -30,13 +30,24 @@ export class TimelineManager {
     }
 
     if(socialPubKey == "all"){
-      return this.bee.comb.search('social/timeline/').flat().sort(function(a,b) {
+      let timeline = this.bee.comb.search('/social/timeline/').flat().sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
-          });;
+          });
+
+          let results = [];
+          let cachedSigs = [];
+          for(let t of timeline){
+            if(typeof t['sig'] != 'undefined' && cachedSigs.indexOf(t['sig']) == -1 && typeof t['content'] != 'undefined' && t['content'].length > 0){
+              results.push(t);
+              cachedSigs.push(t['sig'])
+            }
+          }
+
+      return results;
 
     }
     else{
-        return this.bee.comb.get('social/timeline/'+socialPubKey).sort(function(a,b) {
+        return this.bee.comb.get('/social/timeline/'+socialPubKey).sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
           });
     }
@@ -45,9 +56,11 @@ export class TimelineManager {
   search(searchPhrase){
     let timelines = this.get();
     let results = [];
+    let cachedSigs = [];
     for(let t of timelines){
-      if(t['content'].indexOf(searchPhrase) > -1){
+      if(cachedSigs.indexOf(t['sig']) == -1 && t['content'].indexOf(searchPhrase) > -1){
         results.push(t);
+        cachedSigs.push(t['sig'])
       }
     }
 
