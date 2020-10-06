@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { NativeCrypto } from '@questnetwork/quest-crypto-js';
 import { PostManager } from './post.js';
+import { Subject } from 'rxjs';
 
 
 export class TimelineManager {
