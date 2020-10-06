@@ -22,23 +22,42 @@ export class PostManager {
   new(postObj = { content: '', socialPubKey:'' }){
     postObj['id'] = uuidv4();
     postObj['timestamp'] = new Date().getTime();
-    this.bee.comb.add('social/profile/'+postObj['socialPubKey']+'/timeline',postObj);
+    this.bee.comb.add('social/timeline/'+postObj['socialPubKey'],postObj);
   }
 
   delete(postObj, socialPubKey){
-      this.bee.comb.removeFrom('social/profile/'+socialPubKey+'/timeline',postObj);
+      this.bee.comb.removeFrom('social/timeline/'+socialPubKey,postObj);
       return true;
   }
 
-  get(socialPubKey){
+  get(socialPubKey = "all"){
     if(socialPubKey == "NoProfileSelected"){
       throw('no pubkey selected');
     }
 
-  return this.bee.comb.get('social/profile/'+socialPubKey+'/timeline').sort(function(a,b) {
-      return a.timestamp > b.timestamp ? -1 : 1;
-    });
-  }
+    if(socialPubKey == "all"){
+      return this.bee.comb.search('social/timeline/').flat().sort(function(a,b) {
+            return a.timestamp > b.timestamp ? -1 : 1;
+          });;
 
+    }
+    else{
+        return this.bee.comb.get('social/timeline/'+socialPubKey).sort(function(a,b) {
+            return a.timestamp > b.timestamp ? -1 : 1;
+          });
+    }
+
+  }
+  search(searchPhrase){
+    let timelines = this.get();
+    let results = [];
+    for(let t of timelines){
+      if(t['content'].indexOf(searchPhrase) > -1){
+        results.push(t);
+      }
+    }
+
+    return results;
+  }
 
 }
