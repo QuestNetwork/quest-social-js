@@ -1,11 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Subject } from 'rxjs';
 import { NativeCrypto } from '@questnetwork/quest-crypto-js';
+import { PostManager } from './post.js';
 
 export class QuestSocial {
 
   constructor() {
     this.key = {}
+    this.post = new PostManager();
     this.selectSub = new Subject();
     this.selected;
   }
@@ -31,7 +33,7 @@ export class QuestSocial {
     this.dolphin = config['dependencies']['dolphin'];
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
-
+    await this.post.start(config);
     return true;
   }
 
