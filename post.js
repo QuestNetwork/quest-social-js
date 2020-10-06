@@ -27,12 +27,13 @@ export class PostManager {
 
 
   async new(postObj = { content: '', socialPubKey:'' }){
-    postObj['id'] = uuidv4();
     postObj['timestamp'] = new Date().getTime();
     let mp = await this.profile.getMyProfile();
     let privKey = mp['key']['privKey'];
     postObj = await this.crypto.ec.sign(postObj,privKey);
+    console.log('quest-social-js:','/social/timeline/'+postObj['socialPubKey'],postObj);
     this.bee.comb.add('/social/timeline/'+postObj['socialPubKey'],postObj);
+    return postObj;
   }
 
   delete(postObj, socialPubKey){

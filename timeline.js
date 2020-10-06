@@ -47,6 +47,7 @@ export class TimelineManager {
 
     }
     else{
+
         return this.bee.comb.get('/social/timeline/'+socialPubKey).sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
           });
