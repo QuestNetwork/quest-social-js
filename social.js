@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Subject } from 'rxjs';
 import { NativeCrypto } from '@questnetwork/quest-crypto-js';
-import { PostManager } from './post.js';
+import { TimelineManager } from './timeline.js';
 
 export class QuestSocial {
 
   constructor() {
     this.key = {}
-    this.post = new PostManager();
+    this.timeline = new TimelineManager();
     this.selectSub = new Subject();
     this.selected;
   }
@@ -33,7 +33,7 @@ export class QuestSocial {
     this.dolphin = config['dependencies']['dolphin'];
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
-    await this.post.start(config);
+    await this.timeline.start(config);
     return true;
   }
 

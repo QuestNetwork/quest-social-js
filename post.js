@@ -3,8 +3,11 @@ import { NativeCrypto } from '@questnetwork/quest-crypto-js';
 
 
 export class PostManager {
-  constructor(){
 
+  constructor() {
+    this.key = {}
+    this.selectSub = new Subject();
+    this.selected;
   }
 
   async start(config){
@@ -19,6 +22,7 @@ export class PostManager {
     return true;
   }
 
+
   new(postObj = { content: '', socialPubKey:'' }){
     postObj['id'] = uuidv4();
     postObj['timestamp'] = new Date().getTime();
@@ -28,36 +32,6 @@ export class PostManager {
   delete(postObj, socialPubKey){
       this.bee.comb.removeFrom('social/timeline/'+socialPubKey,postObj);
       return true;
-  }
-
-  get(socialPubKey = "all"){
-    if(socialPubKey == "NoProfileSelected"){
-      throw('no pubkey selected');
-    }
-
-    if(socialPubKey == "all"){
-      return this.bee.comb.search('social/timeline/').flat().sort(function(a,b) {
-            return a.timestamp > b.timestamp ? -1 : 1;
-          });;
-
-    }
-    else{
-        return this.bee.comb.get('social/timeline/'+socialPubKey).sort(function(a,b) {
-            return a.timestamp > b.timestamp ? -1 : 1;
-          });
-    }
-
-  }
-  search(searchPhrase){
-    let timelines = this.get();
-    let results = [];
-    for(let t of timelines){
-      if(t['content'].indexOf(searchPhrase) > -1){
-        results.push(t);
-      }
-    }
-
-    return results;
   }
 
 }
