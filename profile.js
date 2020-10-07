@@ -216,11 +216,11 @@ export class ProfileManager {
       let p = await this.get(profileId);
       if(p['private'] == 'undefined' || p['private'] == true){
         p['private'] = false;
-        this.setProfile(profileId,p);
+        this.set(profileId,p);
       }
       else{
         p['private'] = true;
-        this.setProfile(profileId,p);
+        this.set(profileId,p);
       }
 
     }
