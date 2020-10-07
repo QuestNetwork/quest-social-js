@@ -8,8 +8,6 @@ export class PostManager {
 
   constructor() {
     this.key = {}
-    this.selectSub = new Subject();
-    this.selected;
   }
 
   async start(config){

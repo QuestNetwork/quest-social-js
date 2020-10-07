@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { NativeCrypto } from '@questnetwork/quest-crypto-js';
 import { TimelineManager } from './timeline.js';
 import { ProfileManager } from './profile.js';
+import { AlgoManager } from './algo.js';
 
 export class QuestSocial {
 
@@ -10,6 +11,7 @@ export class QuestSocial {
     this.key = {}
     this.timeline = new TimelineManager();
     this.profile = new ProfileManager();
+    this.algo = new AlgoManager();
 
   }
 
@@ -22,6 +24,7 @@ export class QuestSocial {
     this.dolphin = config['dependencies']['dolphin'];
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
+    await this.algo.start(config);
     await this.profile.start(config);
     config['dependencies']['profile'] = this.profile;
     await this.timeline.start(config);
