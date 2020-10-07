@@ -56,7 +56,7 @@ export class ProfileManager {
       this.key[keys['pubKey']] = keys;
       profileId = keys['pubKey'];
       let p = { key: keys, private: true }
-      this.setProfile(keys['pubKey'],p);
+      this.set(keys['pubKey'],p);
       this.bee.comb.add("/social/myprofiles",keys['pubKey']);
     }
 
