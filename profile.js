@@ -213,6 +213,12 @@ export class ProfileManager {
 
     async togglePrivacy(profileId = 'NoProfileSelected'){
 
+      if(typeof profileId == undefined || profileId == 'NoProfileSelected'){
+        throw('couldnt toggle',profileId);
+      }
+
+      console.log('quest-social-js: Toggling Privacy for: ',profileId);
+
       let p = await this.get(profileId);
       if(p['private'] == 'undefined' || p['private'] == true){
         p['private'] = false;
