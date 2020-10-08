@@ -40,7 +40,7 @@ export class PostManager {
 
     let p = await this.profile.get(postObj['socialPubKey']);
     this.profile.set(postObj['socialPubKey'],p);
-
+    console.log(timeline);
     let unsafeSocialObj = { timeline: timeline, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
     await this.profile.share(unsafeSocialObj)
   }

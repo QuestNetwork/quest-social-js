@@ -69,6 +69,7 @@ export class TimelineManager {
       timeline.sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
       });
+      return timeline;
     }
 
   }
