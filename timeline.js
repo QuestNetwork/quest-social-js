@@ -16,6 +16,8 @@ export class TimelineManager {
     this.jsonSwarm = config['ipfs']['swarm'];
     this.electron = config['dependencies']['electronService'];
     this.bee = config['dependencies']['bee'];
+    this.coral = config['dependencies']['coral'];
+
     this.dolphin = config['dependencies']['dolphin'];
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
