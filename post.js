@@ -35,12 +35,12 @@ export class PostManager {
     // console.log('quest-social-js:','/social/timeline/'+postObj['socialPubKey'],postObj);
     this.bee.comb.add('/social/timeline/'+postObj['socialPubKey'],postObj);
 
-    this.timeline = this.timeline.get(postObj['socialPubKey']);
+    let timeline = this.timeline.get(postObj['socialPubKey']);
 
     let p = await this.profile.get(postObj['socialPubKey']);
     this.profile.set(postObj['socialPubKey'],p);
 
-    let unsafeSocialObj = { timeline: this.timeline, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
+    let unsafeSocialObj = { timeline: timeline, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
     await this.profile.share(unsafeSocialObj)
   }
 
