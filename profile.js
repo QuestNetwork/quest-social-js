@@ -87,7 +87,19 @@ export class ProfileManager {
      this.bee.comb.set("/social/profile/"+profileId,profileObject);
      this.bee.comb.set("/social/sharedWith",[]);
      this.dolphin.clearSharedWith();
+     //TODO:
+     //this.share(profileObject)
    }
+
+
+   share(profileObject){
+     //get all participants
+
+     //cycle through check shared with
+
+     //publish share pub social
+   }
+
 
    async get(profileId = 'NoProfileSelected'){
 
