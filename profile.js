@@ -124,16 +124,18 @@ export class ProfileManager {
       if(await this.isPublic()){
            for(let channel of channels){
              let participants = this.dolphin.getChannelParticipantList(channel);
+
                  let haveToGive = false;
+
                  console.log('CPL: Checking who doesnt have my Social Profile...');
+
                  for(let cPubKey of participants['cList'].split(',')){
-                   console.log(cPubKey);
                    console.log( this.dolphin.isOnline(cPubKey));
-                   console.log(await this.hasMySocial(cPubKey));
-                   if(!await this.hasMySocial(cPubKey) && this.dolphin.isOnline(cPubKey)){
+                   if(this.dolphin.isOnline(cPubKey)){
                      haveToGive = true;
                    }
                  }
+
                  if(haveToGive){
                    console.log('CPL: Sharing Social Profile...');
                    let safeSocialObj = { timeline: unsafeSocialObj['timeline'], alias: unsafeSocialObj['alias'], fullName: unsafeSocialObj['fullName'], about: unsafeSocialObj['about'], private: unsafeSocialObj['private'], key: { pubKey: unsafeSocialObj['key']['pubKey'] }  };
