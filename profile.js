@@ -14,6 +14,8 @@ export class ProfileManager {
       this.selected;
     }
 
+
+
     async start(config){
 
       this.version = config['version'];
@@ -25,6 +27,31 @@ export class ProfileManager {
       this.request = config['dependencies']['request'];
       return true;
     }
+
+    getChannelPubKeys(socialPubKey){
+      //get channel pub keys for this pubkey
+        let links = this.bee.comb.get('/social/links');
+        console.log('Social: Links Found',links);
+        let chPubKeys = Object.keys(links);
+        let results = [];
+        for(cPK of chPubKeys){
+            if(typeof links[cPK] != 'undefined' && links[cPK].flat().indexOf(socialPubKey) > -1){
+              results.push(cPK);
+            }
+        }
+        return results;
+    }
+
+    isOnline(socialPubKey){
+      for(let chPubKey of this.getChannelPubKeys(socialPubKey)){
+        if(this.dolphin.isOnline(chPubKey)){
+          return true;
+        }
+      }
+
+      return false;
+    }
+
 
 
       select(profileId){
@@ -93,6 +120,8 @@ export class ProfileManager {
 
 
    share(profileObject){
+     //get all channels
+
      //get all participants
 
      //cycle through check shared with
