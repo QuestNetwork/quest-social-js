@@ -19,6 +19,7 @@ export class TimelineManager {
     this.dolphin = config['dependencies']['dolphin'];
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
+    config['dependencies']['timeline'] = this;
     this.post.start(config);
     return true;
   }

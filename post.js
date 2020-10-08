@@ -20,6 +20,8 @@ export class PostManager {
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
     this.profile = config['dependencies']['profile'];
+    this.timeline = config['dependencies']['timeline'];
+
     return true;
   }
 
@@ -28,10 +30,18 @@ export class PostManager {
     postObj['timestamp'] = new Date().getTime();
     let mp = await this.profile.getMyProfile();
     let privKey = mp['key']['privKey'];
+    // await this.crypto.ec.digest("SHA-512", this.crypto.convert.stringToArrayBuffer(JSON.stringify(postObj)));
     postObj = await this.crypto.ec.sign(postObj,privKey);
-    console.log('quest-social-js:','/social/timeline/'+postObj['socialPubKey'],postObj);
+    // console.log('quest-social-js:','/social/timeline/'+postObj['socialPubKey'],postObj);
     this.bee.comb.add('/social/timeline/'+postObj['socialPubKey'],postObj);
-    return postObj;
+
+    this.timeline = this.timeline.get(postObj['socialPubKey']);
+
+    let p = await this.profile.get(postObj['socialPubKey']);
+    this.profile.set(postObj['socialPubKey'],p);
+
+    let unsafeSocialObj = { timeline: this.timeline, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
+    await this.profile.share(unsafeSocialObj)
   }
 
   delete(postObj, socialPubKey){
