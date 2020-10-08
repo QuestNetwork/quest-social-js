@@ -17,6 +17,8 @@ export class PostManager {
     this.electron = config['dependencies']['electronService'];
     this.bee = config['dependencies']['bee'];
     this.dolphin = config['dependencies']['dolphin'];
+    this.coral = config['dependencies']['coral'];
+
     this.crypto = new NativeCrypto();
     this.request = config['dependencies']['request'];
     this.profile = config['dependencies']['profile'];
@@ -32,9 +34,10 @@ export class PostManager {
     let privKey = mp['key']['privKey'];
     // await this.crypto.ec.digest("SHA-512", this.crypto.convert.stringToArrayBuffer(JSON.stringify(postObj)));
     postObj = await this.crypto.ec.sign(postObj,privKey);
-    // console.log('quest-social-js:','/social/timeline/'+postObj['socialPubKey'],postObj);
-    this.bee.comb.add('/social/timeline/'+postObj['socialPubKey'],postObj);
 
+    let hash = this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj);
+
+    this.bee.comb.add('/social/timeline/'+postObj['socialPubKey'],hash);
     let timeline = this.timeline.get(postObj['socialPubKey']);
 
     let p = await this.profile.get(postObj['socialPubKey']);
