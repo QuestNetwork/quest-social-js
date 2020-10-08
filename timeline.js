@@ -50,7 +50,7 @@ export class TimelineManager {
         return a.timestamp > b.timestamp ? -1 : 1;
       });
 
-      let results = []e;
+      let results = [];
       let cachedSigs = [];
       for(let t of timeline){
         if(typeof t['sig'] != 'undefined' && cachedSigs.indexOf(t['sig']) == -1 && typeof t['content'] != 'undefined' && t['content'].length > 0){
