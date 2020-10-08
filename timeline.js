@@ -24,34 +24,49 @@ export class TimelineManager {
     return true;
   }
 
-
-  get(socialPubKey = "all"){
+  getReferenceTree(socialPubKey = "all"){
     if(socialPubKey == "NoProfileSelected"){
       throw('no pubkey selected');
     }
 
     if(socialPubKey == "all"){
-      let timeline = this.bee.comb.search('/social/timeline/').flat().sort(function(a,b) {
-            return a.timestamp > b.timestamp ? -1 : 1;
-          });
+      return this.bee.comb.search('/social/timeline/').flat();
+    }
+    else{
+      return this.bee.comb.get('/social/timeline/'+socialPubKey);
+    }
 
-          let results = [];
-          let cachedSigs = [];
-          for(let t of timeline){
-            if(typeof t['sig'] != 'undefined' && cachedSigs.indexOf(t['sig']) == -1 && typeof t['content'] != 'undefined' && t['content'].length > 0){
-              results.push(t);
-              cachedSigs.push(t['sig'])
-            }
-          }
+  }
+
+  async get(socialPubKey = "all"){
+    if(socialPubKey == "NoProfileSelected"){
+      throw('no pubkey selected');
+    }
+
+    if(socialPubKey == "all"){
+      let timeline = this.bee.comb.search('/social/timeline/').flat();
+      timeline = await this.coral.dag.resolve(timeline);
+      timeline.sort(function(a,b) {
+        return a.timestamp > b.timestamp ? -1 : 1;
+      });
+
+      let results = []e;
+      let cachedSigs = [];
+      for(let t of timeline){
+        if(typeof t['sig'] != 'undefined' && cachedSigs.indexOf(t['sig']) == -1 && typeof t['content'] != 'undefined' && t['content'].length > 0){
+          results.push(t);
+          cachedSigs.push(t['sig'])
+        }
+      }
 
       return results;
 
     }
     else{
-
-        return this.bee.comb.get('/social/timeline/'+socialPubKey).sort(function(a,b) {
+      let timeline = await this.coral.dag.get('/social/timeline/'+socialPubKey);
+      timeline.sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
-          });
+      });
     }
 
   }

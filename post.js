@@ -36,7 +36,7 @@ export class PostManager {
     postObj = await this.crypto.ec.sign(postObj,privKey);
 
     let hash = await this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj);
-    let timeline = this.timeline.get(postObj['socialPubKey']);
+    let timeline = await this.timeline.getReferenceTree(postObj['socialPubKey']);
 
     let p = await this.profile.get(postObj['socialPubKey']);
     this.profile.set(postObj['socialPubKey'],p);
