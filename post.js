@@ -35,9 +35,7 @@ export class PostManager {
     // await this.crypto.ec.digest("SHA-512", this.crypto.convert.stringToArrayBuffer(JSON.stringify(postObj)));
     postObj = await this.crypto.ec.sign(postObj,privKey);
 
-    let hash = this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj);
-
-    this.bee.comb.add('/social/timeline/'+postObj['socialPubKey'],hash);
+    let hash = await this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj);
     let timeline = this.timeline.get(postObj['socialPubKey']);
 
     let p = await this.profile.get(postObj['socialPubKey']);
