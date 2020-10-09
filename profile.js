@@ -129,28 +129,35 @@ export class ProfileManager {
      // console.log(channels);
       if(await this.isPublic()){
            for(let channel of channels){
-             let participants = this.dolphin.getChannelParticipantList(channel);
+                try{
+                 let participants = this.dolphin.getChannelParticipantList(channel);
 
-                 let haveToGive = false;
+                     let haveToGive = false;
 
-                 this.dev && console.log('CPL: Checking who doesnt have my Social Profile...');
+                     this.dev && console.log('CPL: Checking who doesnt have my Social Profile...');
 
-                 for(let cPubKey of participants['cList'].split(',')){
-                   this.dev && console.log( this.dolphin.isOnline(cPubKey));
-                   if(this.dolphin.isOnline(cPubKey)){
-                     haveToGive = true;
-                   }
-                 }
+                     for(let cPubKey of participants['cList'].split(',')){
+                       this.dev && console.log( this.dolphin.isOnline(cPubKey));
+                       if(this.dolphin.isOnline(cPubKey)){
+                         haveToGive = true;
+                       }
+                     }
 
-                 if(haveToGive){
-                   this.dev && console.log('CPL: Sharing Social Profile...');
-                   let safeSocialObj = { timeline: unsafeSocialObj['timeline'], alias: unsafeSocialObj['alias'], fullName: unsafeSocialObj['fullName'], about: unsafeSocialObj['about'], private: unsafeSocialObj['private'], key: { pubKey: unsafeSocialObj['key']['pubKey'] }  };
-                   let signedSafeSocialObj = await this.crypto.ec.sign(safeSocialObj,unsafeSocialObj['key']['privKey']);
-                   let pubObj = { message: signedSafeSocialObj };
-                   this.dolphin.publish(channel, pubObj,'SHARE_PUBLIC_SOCIAL');
-                 }
-             }
+                     if(haveToGive){
+                       this.dev && console.log('CPL: Sharing Social Profile...');
+                       let safeSocialObj = { timeline: unsafeSocialObj['timeline'], alias: unsafeSocialObj['alias'], fullName: unsafeSocialObj['fullName'], about: unsafeSocialObj['about'], private: unsafeSocialObj['private'], key: { pubKey: unsafeSocialObj['key']['pubKey'] }  };
+                       let signedSafeSocialObj = await this.crypto.ec.sign(safeSocialObj,unsafeSocialObj['key']['privKey']);
+                       let pubObj = { message: signedSafeSocialObj };
+
+                       try{
+                          this.dolphin.publish(channel, pubObj,'SHARE_PUBLIC_SOCIAL');
+                        }catch(e){this.dev && console.log(e)};
+
+                     }
+
+               }catch(e){this.dev && console.log(e)}
            }
+         }
      }
 
 
