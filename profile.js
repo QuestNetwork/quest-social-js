@@ -12,6 +12,8 @@ export class ProfileManager {
       this.key = {}
       this.selectSub = new Subject();
       this.selected;
+      this.dev = false;
+
     }
 
 
@@ -25,13 +27,17 @@ export class ProfileManager {
       this.dolphin = config['dependencies']['dolphin'];
       this.crypto = new NativeCrypto();
       this.request = config['dependencies']['request'];
+      if(typeof config['dev'] != 'undefined'){
+        this.dev = config['dev'];
+      }
+
       return true;
     }
 
     getChannelPubKeys(socialPubKey){
       //get channel pub keys for this pubkey
         let links = this.bee.comb.get('/social/links');
-        console.log('Social: Links Found',links);
+        this.dev && console.log('Social: Links Found',links);
         let chPubKeys = Object.keys(links);
         let results = [];
         for(cPK of chPubKeys){
@@ -94,11 +100,11 @@ export class ProfileManager {
   async getMyProfile(){
 
     let pId = await this.getMyProfileId();
-    console.log("Social: Getting my profile...",pId);
+    this.dev && console.log("Social: Getting my profile...",pId);
 
-    console.log(pId);
+    this.dev && console.log(pId);
     let p = this.bee.comb.get("/social/profile/"+pId);
-    console.log(p);
+    this.dev && console.log(p);
     return p;
   }
 
@@ -127,17 +133,17 @@ export class ProfileManager {
 
                  let haveToGive = false;
 
-                 console.log('CPL: Checking who doesnt have my Social Profile...');
+                 this.dev && console.log('CPL: Checking who doesnt have my Social Profile...');
 
                  for(let cPubKey of participants['cList'].split(',')){
-                   console.log( this.dolphin.isOnline(cPubKey));
+                   this.dev && console.log( this.dolphin.isOnline(cPubKey));
                    if(this.dolphin.isOnline(cPubKey)){
                      haveToGive = true;
                    }
                  }
 
                  if(haveToGive){
-                   console.log('CPL: Sharing Social Profile...');
+                   this.dev && console.log('CPL: Sharing Social Profile...');
                    let safeSocialObj = { timeline: unsafeSocialObj['timeline'], alias: unsafeSocialObj['alias'], fullName: unsafeSocialObj['fullName'], about: unsafeSocialObj['about'], private: unsafeSocialObj['private'], key: { pubKey: unsafeSocialObj['key']['pubKey'] }  };
                    let signedSafeSocialObj = await this.crypto.ec.sign(safeSocialObj,unsafeSocialObj['key']['privKey']);
                    let pubObj = { message: signedSafeSocialObj };
@@ -157,27 +163,27 @@ export class ProfileManager {
        return await this.getMyProfile();
      }
 
-     console.log("Social: Retrieving profile...",profileId);
+     this.dev && console.log("Social: Retrieving profile...",profileId);
 
-     console.log(this.bee.comb.get("/social/profile/"+profileId));
+     this.dev && console.log(this.bee.comb.get("/social/profile/"+profileId));
 
      let pC = JSON.parse(JSON.stringify(this.bee.comb.get("/social/profile/"+profileId)));
-     console.log(JSON.parse(JSON.stringify(this.bee.comb.get("/social/profile/"+profileId))));
+     this.dev && console.log(JSON.parse(JSON.stringify(this.bee.comb.get("/social/profile/"+profileId))));
      if(typeof pC['key'] != "undefined"){
        this.key[profileId] = pC['key'];
        // delete pC['key']['privKey'];
      }
 
-     console.log(pC);
+     this.dev && console.log(pC);
      return pC;
    }
 
    async getByChannelPubKey(chPubKey){
      let links = this.bee.comb.get('/social/links');
-     console.log('Social: Links Found',links);
+     this.dev && console.log('Social: Links Found',links);
      if(typeof links[chPubKey] != 'undefined'){
        let profileId = links[chPubKey][0];
-       console.log('Social: Getting Profile For',profileId);
+       this.dev && console.log('Social: Getting Profile For',profileId);
        return await this.get(profileId);
      }
      else{
@@ -249,7 +255,7 @@ export class ProfileManager {
         if(p['private'] == false){
           return true;
         }
-      }catch(e){console.log(e)}
+      }catch(e){this.dev && console.log(e)}
       return false;
     }
 
@@ -278,10 +284,10 @@ export class ProfileManager {
         throw('couldnt toggle',profileId);
       }
 
-      console.log('quest-social-js: Toggling Privacy for: ',profileId);
+      this.dev && console.log('quest-social-js: Toggling Privacy for: ',profileId);
 
       let p = await this.get(profileId);
-      console.log(p);
+      this.dev && console.log(p);
 
       if(typeof p['alias'] == 'undefined'){
         throw('no alias');
@@ -303,9 +309,9 @@ export class ProfileManager {
     }
 
     isRequestedFavorite(pubKey){
-      console.log('Social: Testing Favorites...',pubKey);
+      this.dev && console.log('Social: Testing Favorites...',pubKey);
       let c = this.bee.comb.get('/social/favoriteRequests');
-      console.log(c);
+      this.dev && console.log(c);
       if(typeof c['push'] == 'undefined'){
         return false;
       }
@@ -322,7 +328,7 @@ export class ProfileManager {
       let c = this.bee.comb.get('/social/favoriteRequests');
 
       for(let i=0;i<c.length;i++ ){
-        console.log(c[i]);
+        this.dev && console.log(c[i]);
         if(typeof c[i]['pubKey'] != 'undefined' && c[i]['pubKey'] == socialPubKey){
           return c[i]['channel'];
         }
@@ -332,7 +338,7 @@ export class ProfileManager {
 
 
       addFavoriteRequest(pubKey,chName){
-          console.log('qSocial: Adding New Favorite Request...',pubKey,chName);
+          this.dev && console.log('qSocial: Adding New Favorite Request...',pubKey,chName);
 
           this.bee.comb.add('/social/favoriteRequests', { pubKey: pubKey, channel: chName });
       }
@@ -344,10 +350,10 @@ export class ProfileManager {
       }
 
       removeFavorite(pubKey){
-        console.log(pubKey);
-        console.log(this.bee.comb.get('/social/favorites'));
+        this.dev && console.log(pubKey);
+        this.dev && console.log(this.bee.comb.get('/social/favorites'));
         this.bee.comb.removeIn('/social/favorites',pubKey)
-        console.log(this.bee.comb.get('/social/favorites'));
+        this.dev && console.log(this.bee.comb.get('/social/favorites'));
 
         this.removeFavoriteRequest(pubKey);
       }
