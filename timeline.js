@@ -53,11 +53,11 @@ export class TimelineManager {
       });
 
       let results = [];
-      let cachedSigs = [];
+      let cachedHashes = [];
       for(let t of timeline){
-        if(typeof t['sig'] != 'undefined' && cachedSigs.indexOf(t['sig']) == -1 && typeof t['content'] != 'undefined' && t['content'].length > 0){
+        if(typeof t['qHash'] != 'undefined' && cachedHashes.indexOf(t['qHash']) == -1 && typeof t['content'] != 'undefined' && t['content'].length > 0){
           results.push(t);
-          cachedSigs.push(t['sig'])
+          cachedHashes.push(t['qHash'])
         }
       }
 

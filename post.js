@@ -45,8 +45,9 @@ export class PostManager {
     await this.profile.share(unsafeSocialObj)
   }
 
-  delete(postObj, socialPubKey){
-      this.bee.comb.removeFrom('/social/timeline/'+socialPubKey,postObj);
+  delete(qHash, socialPubKey){
+    console.log('Quest Social JS: Removing Post...',qHash,socialPubKey)
+      this.bee.comb.removeFrom('/social/timeline/'+socialPubKey,{qHash: qHash});
       return true;
   }
 
