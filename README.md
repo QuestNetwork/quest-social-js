@@ -13,7 +13,7 @@ See [QD Social TS](https://github.com/QuestNetwork/qd-social-ts) the [Features](
 
 ## Installation & Usage
 ```
-npm install @questnetwork/quest-social-js@0.9.3
+npm install @questnetwork/quest-social-js@0.9.4
 ```
 
 ## API
@@ -63,7 +63,7 @@ if(<os>.social.profile.isRequestedFavorite(socialPubKey)){
 };
 ```
 
-#### social.search(searchPhrase)
+#### social.profile.search(searchPhrase)
 [![Social](https://img.shields.io/badge/process-Social-green)](https://github.com/QuestNetwork/quest-social-js) [![Bee](https://img.shields.io/badge/process-Bee-yellow)](https://github.com/QuestNetwork/quest-bee-js)  
 
 Will automatically search for all social profiles in the peers network where alias, full name or about text match the phrase.
@@ -78,6 +78,42 @@ isRequestedFavorite: boolean
 ```
 let results = <os>.social.search('Bob');
 ```
+
+### timeline
+
+
+#### async social.timeline.getReferenceTree(socialPubKey)
+[![Social](https://img.shields.io/badge/process-Social-green)](https://github.com/QuestNetwork/quest-social-js) [![Bee](https://img.shields.io/badge/process-Bee-yellow)](https://github.com/QuestNetwork/quest-bee-js) [![Ocean](https://img.shields.io/badge/process-Ocean-blue)](https://github.com/QuestNetwork/quest-ocean-js)
+
+Returns an array with the unresolved timeline of the requested peer.
+
+```javascript
+let timeline = await <os>.social.timeline.get(socialPubKey)){
+};
+```
+
+
+#### async social.timeline.get(socialPubKey)
+[![Social](https://img.shields.io/badge/process-Social-green)](https://github.com/QuestNetwork/quest-social-js) [![Bee](https://img.shields.io/badge/process-Bee-yellow)](https://github.com/QuestNetwork/quest-bee-js) [![Ocean](https://img.shields.io/badge/process-Ocean-blue)](https://github.com/QuestNetwork/quest-ocean-js)
+
+Returns an array with the resolved timeline of the requested peer.
+
+```javascript
+let timeline = await <os>.social.timeline.get(socialPubKey)){
+```
+
+#### post
+
+##### social.timeline.post.delete(qHash)
+[![Social](https://img.shields.io/badge/process-Social-green)](https://github.com/QuestNetwork/quest-social-js) [![Bee](https://img.shields.io/badge/process-Bee-yellow)](https://github.com/QuestNetwork/quest-bee-js) [![Ocean](https://img.shields.io/badge/process-Ocean-blue)](https://github.com/QuestNetwork/quest-ocean-js)
+
+Deletes a post by its qHash.
+
+```javascript
+<os>.social.timeline.post.delete(qHash);
+```
+  
+  
 
 ## Support Us
 Please consider supporting us, so that we can build a non-profit for this project (ツ)
