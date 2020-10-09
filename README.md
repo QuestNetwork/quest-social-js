@@ -7,7 +7,7 @@
 
 ## Description
 
-The Social process for the [Quest Network Operating System](https://github.com/QuestNetwork/quest-os-js) orchestrates, stores and synchronizes configuration data, discovers and shares relevant information about dolphin peers.
+The Social process for the [Quest Network Operating System](https://github.com/QuestNetwork/quest-os-js) orchestrates, stores and synchronizes configuration data, discovers and shares relevant information about dolphin peers. Uses [IPFS DAGs](https://docs.ipfs.io/concepts/merkle-dag/) for timelines.
 
 See [QD Social TS](https://github.com/QuestNetwork/qd-social-ts) the [Features](https://github.com/QuestNetwork/qd-social-ts#Features) & [Roadmap](https://github.com/QuestNetwork/qd-social-ts#Roadmap)
 
