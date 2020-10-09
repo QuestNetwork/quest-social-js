@@ -42,7 +42,12 @@ export class PostManager {
     this.profile.set(postObj['socialPubKey'],p);
     console.log(timeline);
     let unsafeSocialObj = { timeline: timeline, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
+
+    this.bee.comb.set("/social/sharedWith",[]);
+    this.dolphin.clearSharedWith();
+
     await this.profile.share(unsafeSocialObj)
+
   }
 
   delete(qHash, socialPubKey){
