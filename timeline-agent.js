@@ -113,6 +113,11 @@ export class TimelineAgent {
             await this.resolveReplyTreeRec(p, p['qHash'], pubKey);
           }
         }
+
+
+
+
+
           //
           // this.timeline = this.timeline.filter(e => typeof e['content'] != 'undefined')
           // this.timeline = this.timeline.filter(e => typeof e['repyTo'] == 'undefined')
@@ -196,7 +201,20 @@ export class TimelineAgent {
 
 
 try{
-      this.replyTree[pubKey][qHash].push(await this.coral.dag.get(postObj['replyTo'],{ storagePath: '/archive/social/timeline/transaction' }));
+
+      let node = await this.coral.dag.get(postObj['replyTo'],{ storagePath: '/archive/social/timeline/transaction' });
+      //
+      // let exists = false;
+      // for(let n of this.replyTree[pubKey][qHash]){
+      //   if(node['qHash'] == n['qHash']){
+      //     exists = true;
+      //   }
+      // }
+      //
+      // if(!exists){
+        this.replyTree[pubKey][qHash].push(node);
+      // }
+
       if(typeof this.replyTree[pubKey][qHash][this.replyTree[pubKey][qHash].length-1] != 'undefined' && this.replyTree[pubKey][qHash][this.replyTree[pubKey][qHash].length-1] !== false){
               await this.resolveReplyTreeRec(this.replyTree[pubKey][qHash][this.replyTree[pubKey][qHash].length-1], qHash, pubKey);
       }

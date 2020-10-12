@@ -60,10 +60,9 @@ export class TimelineManager {
       for(let i = 0;i<timelines.length; i++){
         console.log('getting timeline...',timelines[i]);
           timelines[i] = await this.coral.dag.get(timelines[i]['qHash'], { storagePath: '/archive/social/timeline/transaction', limit: config['limit'], whistle: timelines[i]['whistle'] })
+          console.log(  timelines[i]);
           console.log(timelines[i])
-          timelines[i] =   timelines[i].sort(function(a,b) {
-              return a.timestamp > b.timestamp ? -1 : 1;
-            });
+      
             // cachedHashes.push(timelines[i]['qHash'])
       }
       let re =  timelines.flat().sort(function(a,b) {
