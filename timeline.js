@@ -49,6 +49,9 @@ export class TimelineManager {
   }
 
   async get(socialPubKey = "all", config = { limit: 5,  storagePath: '/archive/social/timeline/transaction'}){
+
+
+
     if(socialPubKey == "NoProfileSelected"){
       throw('no pubkey selected');
     }
@@ -57,17 +60,19 @@ export class TimelineManager {
       // let cachedHashes = [];
 
       let timelines = this.bee.comb.search('/social/timeline/').flat();
+
       for(let i = 0;i<timelines.length; i++){
-        console.log('getting timeline...',timelines[i]);
+        // console.log('getting timeline...',timelines[i]);
           timelines[i] = await this.coral.dag.get(timelines[i]['qHash'], { storagePath: '/archive/social/timeline/transaction', limit: config['limit'], whistle: timelines[i]['whistle'] })
-          console.log(  timelines[i]);
-          console.log(timelines[i])
-      
+          // console.log(  timelines[i]);
+          // console.log(timelines[i])
             // cachedHashes.push(timelines[i]['qHash'])
       }
       let re =  timelines.flat().sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
       });
+
+
       return re;
     }
     else{

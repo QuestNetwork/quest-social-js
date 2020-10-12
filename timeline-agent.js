@@ -92,41 +92,35 @@ export class TimelineAgent {
           throw('no pubkey selected');
         }
 
-        this.timelines[pubKey] = [];
+
+        // this.timelines[pubKey] = [];
+        let timeline = [];
 
 
         this.limit[pubKey] = config['limit'];
 
-        this.replyTree[pubKey] = {};
 
-
-        if(pubKey == "all"){
-          this.timelines[pubKey] = await this.timeline.get('all', config);
-        }
-        else{
-          this.timelines[pubKey] = await this.timeline.get(pubKey, config);
-        }
-
-
-        if(this.timelines[pubKey].length > 0){
-          for(let p of this.timelines[pubKey]){
-            await this.resolveReplyTreeRec(p, p['qHash'], pubKey);
+          if(pubKey == "all"){
+            timeline = await this.timeline.get('all', config);
           }
-        }
+          else{
+            timeline = await this.timeline.get(pubKey, config);
+          }
 
 
+          let replyTree = {};
+          if(timeline.length > 0){
+            for(let p of timeline){
+              replyTree[p['qHash']] = []
+            }
+          }
 
+          let groupedTimeline = await this.groupTimeline(timeline, config['limit']);
 
+          this.timelines[pubKey] = timeline;
+          // this.replyTree[pubKey] = replyTree;
 
-          //
-          // this.timeline = this.timeline.filter(e => typeof e['content'] != 'undefined')
-          // this.timeline = this.timeline.filter(e => typeof e['repyTo'] == 'undefined')
-          //
-
-          await this.groupTimeline(pubKey);
-
-
-          let res = { id: uuidv4(), groupedTimeline: this.groupedTimelines[pubKey], replyTree: this.replyTree[pubKey], timeline: this.timelines[pubKey] };
+          let res = { id: uuidv4(), groupedTimeline: groupedTimeline, replyTree: replyTree, timeline: timeline };
           console.log(res);
           console.log(pubKey);
 
@@ -140,11 +134,14 @@ export class TimelineAgent {
           return res;
   }
 
-  async groupTimeline(pubKey){
+
+
+  async groupTimeline(timeline,  limit = 0){
+    let groupedTimelines = [];
      let groupedTimeline = {};
      let replied = [];
-     for(let i=0;i<this.timelines[pubKey].length; i++){
-       let p = this.timelines[pubKey][i];
+     for(let i=0;i<timeline.length; i++){
+       let p = timeline[i];
 
         if(typeof p['replyTo'] != 'undefined'){
           replied.push(p['replyTo']);
@@ -158,28 +155,48 @@ export class TimelineAgent {
         }
      }
 
-     this.groupedTimelines[pubKey] = [];
      let keys = Object.keys(groupedTimeline);
      for(let key of keys){
-       // console.log(key)
-       // console.log( groupedTimeline[key][0]);
-       if((key.length > 5 && groupedTimeline[key].length > 0 && this.inTimeline(groupedTimeline[key][0]['replyTo'], pubKey)) || (groupedTimeline[key].length == 1 && typeof groupedTimeline[key][0]['replyTo'] == 'undefined'  && replied.indexOf(groupedTimeline[key][0]['qHash']) < 0 )){
-         this.groupedTimelines[pubKey].push(groupedTimeline[key]);
+       if((key.length > 5 && groupedTimeline[key].length > 0 && this.inTimeline(timeline,groupedTimeline[key][0]['replyTo'])) || (groupedTimeline[key].length == 1 && typeof groupedTimeline[key][0]['replyTo'] == 'undefined'  && replied.indexOf(groupedTimeline[key][0]['qHash']) < 0 )){
+         groupedTimelines.push(groupedTimeline[key]);
        }
      }
 
-     this.groupedTimelines[pubKey].sort(function(a,b) {
+     groupedTimelines.sort(function(a,b) {
        return a[0].timestamp > b[0].timestamp ? -1 : 1;
      });
 
-     console.log(this.groupedTimelines[pubKey]);
-     return this.groupedTimelines[pubKey] ;
+     let newCombined = [];
+     let i = 0;
+
+     for(let combinedTimeline of groupedTimelines){
+       let newTimeline = [];
+       let pushed = [];
+       for(let p of combinedTimeline){
+         if(pushed.indexOf(p['qHash']) < 0){
+           newTimeline.push(p);
+           pushed.push(p['qHash']);
+         }
+       }
+
+       if(i<limit || limit == 0){
+          newCombined.push(newTimeline);
+       }
+
+        i++;
+
+     }
+
+     groupedTimelines = newCombined;
+
+     console.log(groupedTimelines);
+     return groupedTimelines;
 
 
    }
-
-   inTimeline(qHash, pubKey){
-     for(let p of this.timelines[pubKey]){
+   //
+   inTimeline(timeline,qHash){
+     for(let p of timeline){
        if(typeof p['qHash'] != 'undefined' && p['qHash'] == qHash){
          return true;
        }
@@ -187,43 +204,28 @@ export class TimelineAgent {
 
      return false;
    }
+   //
 
-  async resolveReplyTreeRec(postObj, qHash, pubKey){
+   async resolveReplyTreeRec(postObj, qHash = ""){
+     qHash = postObj['qHash'];
+     let replyTree = [];
 
-
-    if(typeof this.replyTree[pubKey][qHash] == 'undefined'){
-       this.replyTree[pubKey][qHash] = [];
-    }
-
-    if(typeof postObj['replyTo'] == 'undefined'){
-      return this.replyTree[pubKey][qHash];
-    }
-
-
-try{
+     if(typeof postObj['replyTo'] == 'undefined'){
+       return [];
+     }
+     try{
 
       let node = await this.coral.dag.get(postObj['replyTo'],{ storagePath: '/archive/social/timeline/transaction' });
-      //
-      // let exists = false;
-      // for(let n of this.replyTree[pubKey][qHash]){
-      //   if(node['qHash'] == n['qHash']){
-      //     exists = true;
-      //   }
-      // }
-      //
-      // if(!exists){
-        this.replyTree[pubKey][qHash].push(node);
-      // }
-
-      if(typeof this.replyTree[pubKey][qHash][this.replyTree[pubKey][qHash].length-1] != 'undefined' && this.replyTree[pubKey][qHash][this.replyTree[pubKey][qHash].length-1] !== false){
-              await this.resolveReplyTreeRec(this.replyTree[pubKey][qHash][this.replyTree[pubKey][qHash].length-1], qHash, pubKey);
+      replyTree.push(node);
+      if(typeof replyTree[replyTree.length-1] != 'undefined' && replyTree[replyTree.length-1] !== false){
+            replyTree = replyTree.concat(await this.resolveReplyTreeRec(replyTree[replyTree.length-1], qHash));
       }
 
-      this.replyTree[pubKey][qHash] = this.replyTree[pubKey][qHash].sort(function(a,b) {
+      replyTree = replyTree.sort(function(a,b) {
         return a.timestamp < b.timestamp ? -1 : 1;
       });
 }catch(e){console.log(e)};
-      return this.replyTree[pubKey][qHash]
+      return replyTree;
   }
 
 
