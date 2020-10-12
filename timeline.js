@@ -44,6 +44,10 @@ export class TimelineManager {
 
   }
 
+  getLatestRef(socialPubKey = "all"){
+        return this.bee.comb.get('/social/timeline/'+socialPubKey);
+  }
+
   async get(socialPubKey = "all", config = { limit: 5,  storagePath: '/archive/social/timeline/transaction'}){
     if(socialPubKey == "NoProfileSelected"){
       throw('no pubkey selected');
@@ -62,11 +66,13 @@ export class TimelineManager {
             });
             // cachedHashes.push(timelines[i]['qHash'])
       }
-      console.log(timelines)
-      return timelines;
+      let re =  timelines.flat().sort(function(a,b) {
+            return a.timestamp > b.timestamp ? -1 : 1;
+      });
+      return re;
     }
     else{
-      let timeline = await this.coral.dag.get('/social/timeline/'+socialPubKey, { storagePath: '/archive/social/timeline/transaction', limit: config['limit'] })
+      let timeline = await this.coral.dag.get('/social/timeline/'+socialPubKey, config);
       timeline.sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
       });

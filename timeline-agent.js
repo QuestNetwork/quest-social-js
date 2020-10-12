@@ -11,12 +11,14 @@ export class TimelineAgent {
     this.key = {}
     this.utilities = new UtilitiesInstance();
 
-
+    this.limitDefault =
        this.groupedTimelines = {};
          this.replyTree = {};
       this.replyIterator = 0;
       this.updateSub = {};
       this.timelines = {};
+      this.limit = {}
+      this.limitDefault = 5;
   }
 
   getReplyCount(qHash){
@@ -74,7 +76,15 @@ export class TimelineAgent {
     }
   }
 
-  async sync(pubKey = "all"){
+  getLimit(pubKey){
+    if(typeof this.limit[pubKey] == 'undefined'){
+    return this.limitDefault
+    }
+    return this.limit[pubKey];
+  }
+
+
+  async sync(pubKey = "all", config = { limit: 5,  storagePath: '/archive/social/timeline/transaction' }){
 
     console.log('Quest Social Timeline Agent: Syncing...',pubKey);
 
@@ -83,14 +93,18 @@ export class TimelineAgent {
         }
 
         this.timelines[pubKey] = [];
+
+
+        this.limit[pubKey] = config['limit'];
+
         this.replyTree[pubKey] = {};
 
 
         if(pubKey == "all"){
-          this.timelines[pubKey] = await this.timeline.get();
+          this.timelines[pubKey] = await this.timeline.get('all', config);
         }
         else{
-          this.timelines[pubKey] = await this.timeline.get(pubKey);
+          this.timelines[pubKey] = await this.timeline.get(pubKey, config);
         }
 
 
