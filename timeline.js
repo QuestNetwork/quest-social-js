@@ -1,12 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 import { NativeCrypto } from '@questnetwork/quest-crypto-js';
-import { PostManager } from './post.js';
+import { PostManager } from './timeline-post.js';
 import { Subject } from 'rxjs';
+import { TimelineAgent } from './timeline-agent.js';
 
 
 export class TimelineManager {
   constructor(){
     this.post = new PostManager();
+    this.agent = new TimelineAgent();
 
   }
 
@@ -23,6 +25,8 @@ export class TimelineManager {
     this.request = config['dependencies']['request'];
     config['dependencies']['timeline'] = this;
     this.post.start(config);
+    this.agent.start(config);
+
     return true;
   }
 
@@ -40,35 +44,33 @@ export class TimelineManager {
 
   }
 
-  async get(socialPubKey = "all"){
+  async get(socialPubKey = "all", config = { limit: 5,  storagePath: '/archive/social/timeline/transaction'}){
     if(socialPubKey == "NoProfileSelected"){
       throw('no pubkey selected');
     }
 
     if(socialPubKey == "all"){
-      let timeline = this.bee.comb.search('/social/timeline/').flat();
-      timeline = await this.coral.dag.resolve(timeline);
-      timeline.sort(function(a,b) {
-        return a.timestamp > b.timestamp ? -1 : 1;
-      });
+      // let cachedHashes = [];
 
-      let results = [];
-      let cachedHashes = [];
-      for(let t of timeline){
-        if(typeof t['qHash'] != 'undefined' && cachedHashes.indexOf(t['qHash']) == -1 && typeof t['content'] != 'undefined' && t['content'].length > 0){
-          results.push(t);
-          cachedHashes.push(t['qHash'])
-        }
+      let timelines = this.bee.comb.search('/social/timeline/').flat();
+      for(let i = 0;i<timelines.length; i++){
+        console.log('getting timeline...',timelines[i]);
+          timelines[i] = await this.coral.dag.get(timelines[i]['qHash'], { storagePath: '/archive/social/timeline/transaction', limit: config['limit'], whistle: timelines[i]['whistle'] })
+          console.log(timelines[i])
+          timelines[i] =   timelines[i].sort(function(a,b) {
+              return a.timestamp > b.timestamp ? -1 : 1;
+            });
+            // cachedHashes.push(timelines[i]['qHash'])
       }
-
-      return results;
-
+      console.log(timelines)
+      return timelines;
     }
     else{
-      let timeline = await this.coral.dag.get('/social/timeline/'+socialPubKey);
+      let timeline = await this.coral.dag.get('/social/timeline/'+socialPubKey, { storagePath: '/archive/social/timeline/transaction', limit: config['limit'] })
       timeline.sort(function(a,b) {
             return a.timestamp > b.timestamp ? -1 : 1;
       });
+      console.log(timeline);
       return timeline;
     }
 

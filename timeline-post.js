@@ -8,7 +8,23 @@ export class PostManager {
 
   constructor() {
     this.key = {}
+    this.selectSub = new Subject();
+    this.selected;
   }
+
+  select(qHash){
+    this.selectSub.next(qHash);
+    this.selected = qHash;
+    console.log('Quest Social Timeline Post: Selecting...',qHash)
+  }
+
+  onSelect(){
+    return this.selectSub;
+  }
+  getSelected(){
+    return this.selected;
+  }
+
 
   async start(config){
 
@@ -28,6 +44,7 @@ export class PostManager {
   }
 
 
+
   async new(postObj = { content: '', socialPubKey:'' }){
     postObj['timestamp'] = new Date().getTime();
     let mp = await this.profile.getMyProfile();
@@ -35,13 +52,12 @@ export class PostManager {
     // await this.crypto.ec.digest("SHA-512", this.crypto.convert.stringToArrayBuffer(JSON.stringify(postObj)));
     postObj = await this.crypto.ec.sign(postObj,privKey);
 
-    let hash = await this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj);
-    let timeline = await this.timeline.getReferenceTree(postObj['socialPubKey']);
+    let latestRefHash = await this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj,{ storagePath: '/archive/social/timeline/transaction' });
 
     let p = await this.profile.get(postObj['socialPubKey']);
     this.profile.set(postObj['socialPubKey'],p);
-    console.log(timeline);
-    let unsafeSocialObj = { timeline: timeline, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
+    console.log(latestRefHash);
+    let unsafeSocialObj = { timeline: latestRefHash, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
 
     this.bee.comb.set("/social/sharedWith",[]);
     this.dolphin.clearSharedWith();
