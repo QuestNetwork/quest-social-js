@@ -48,7 +48,7 @@ export class TimelineManager {
         return this.bee.comb.get('/social/timeline/'+socialPubKey);
   }
 
-  async get(socialPubKey = "all", config = { limit: 5,  storagePath: '/archive/social/timeline/transaction'}){
+  async get(socialPubKey = "all", config = { limit: 5, cacheRef:true,  storagePath: '/archive/social/timeline/transaction'}){
 
 
 
@@ -63,7 +63,7 @@ export class TimelineManager {
 
       for(let i = 0;i<timelines.length; i++){
         // console.log('getting timeline...',timelines[i]);
-          timelines[i] = await this.coral.dag.get(timelines[i]['qHash'], { storagePath: '/archive/social/timeline/transaction', limit: config['limit'], whistle: timelines[i]['whistle'] })
+          timelines[i] = await this.coral.dag.get(timelines[i]['qHash'], { storagePath: '/archive/social/timeline/transaction', cacheRef:true, limit: config['limit'], whistle: timelines[i]['whistle'] })
           // console.log(  timelines[i]);
           // console.log(timelines[i])
             // cachedHashes.push(timelines[i]['qHash'])
@@ -72,8 +72,17 @@ export class TimelineManager {
             return a.timestamp > b.timestamp ? -1 : 1;
       });
 
+      let results = [];
+      let pushed = [];
 
-      return re;
+      for(let p of re){
+        if(typeof p['content'] != 'undefined' && p['content'].length > 0 && pushed.indexOf(p['qHash']) === -1){
+          results.push(p);
+          pushed.push(p['qHash']);
+        }
+      }
+
+      return results;
     }
     else{
       let timeline = await this.coral.dag.get('/social/timeline/'+socialPubKey, config);
@@ -85,6 +94,9 @@ export class TimelineManager {
     }
 
   }
+
+
+// usage example:
   search(searchPhrase){
     let timelines = this.get();
     let results = [];

@@ -108,19 +108,13 @@ export class TimelineAgent {
           }
 
 
-          let replyTree = {};
-          if(timeline.length > 0){
-            for(let p of timeline){
-              replyTree[p['qHash']] = []
-            }
-          }
 
           let groupedTimeline = await this.groupTimeline(timeline, config['limit']);
 
           this.timelines[pubKey] = timeline;
           // this.replyTree[pubKey] = replyTree;
 
-          let res = { id: uuidv4(), groupedTimeline: groupedTimeline, replyTree: replyTree, timeline: timeline };
+          let res = { id: uuidv4(), groupedTimeline: groupedTimeline, timeline: timeline };
           console.log(res);
           console.log(pubKey);
 
@@ -215,7 +209,7 @@ export class TimelineAgent {
      }
      try{
 
-      let node = await this.coral.dag.get(postObj['replyTo'],{ storagePath: '/archive/social/timeline/transaction' });
+      let node = await this.coral.dag.get(postObj['replyTo'],{ limit:0, storagePath: '/archive/social/timeline/transaction' });
       replyTree.push(node);
       if(typeof replyTree[replyTree.length-1] != 'undefined' && replyTree[replyTree.length-1] !== false){
             replyTree = replyTree.concat(await this.resolveReplyTreeRec(replyTree[replyTree.length-1], qHash));

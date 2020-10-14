@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Subject } from 'rxjs';
 
 import { NativeCrypto } from '@questnetwork/quest-crypto-js';
+import { UtilitiesInstance } from "@questnetwork/quest-utilities-js";
 
 
 export class PostManager {
@@ -28,6 +29,7 @@ export class PostManager {
 
   async start(config){
 
+    this.utilities = new UtilitiesInstance();
     this.version = config['version'];
     this.jsonSwarm = config['ipfs']['swarm'];
     this.electron = config['dependencies']['electronService'];
@@ -52,24 +54,74 @@ export class PostManager {
     // await this.crypto.ec.digest("SHA-512", this.crypto.convert.stringToArrayBuffer(JSON.stringify(postObj)));
     postObj = await this.crypto.ec.sign(postObj,privKey);
 
-    let latestRefHash = await this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj,{ storagePath: '/archive/social/timeline/transaction' });
+    let latestRef = await this.coral.dag.add('/social/timeline/'+postObj['socialPubKey'],postObj,{ storagePath: '/archive/social/timeline/transaction' });
+
+    await this.propagate(latestRef, postObj);
+  }
+
+  async propagate(latestRef, postObj){
+    let mp = await this.profile.getMyProfile();
+    let privKey = mp['key']['privKey'];
 
     let p = await this.profile.get(postObj['socialPubKey']);
     this.profile.set(postObj['socialPubKey'],p);
-    console.log(latestRefHash);
-    let unsafeSocialObj = { timeline: latestRefHash, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
+    console.log(latestRef);
+    let unsafeSocialObj = { timeline: latestRef, alias: p['alias'], fullName: p['fullName'], about: p['about'], private: p['private'], key: { pubKey: mp['key']['pubKey'], privKey: privKey }  };
 
     this.bee.comb.set("/social/sharedWith",[]);
     this.dolphin.clearSharedWith();
 
     await this.profile.share(unsafeSocialObj)
-
   }
 
-  delete(qHash, socialPubKey){
-    console.log('Quest Social JS: Removing Post...',qHash,socialPubKey)
-      this.bee.comb.removeFrom('/social/timeline/'+socialPubKey,{qHash: qHash});
-      return true;
-  }
+  async delete(qHash, socialPubKey){
+
+
+
+
+    let latestRef;
+      console.log('Quest Social JS: Removing Post...',qHash,socialPubKey)
+      let completeTimeline = await this.coral.dag.get('/social/timeline/'+socialPubKey, {limit:0});
+      console.log(completeTimeline);
+
+      completeTimeline =  completeTimeline.sort(function(a,b) {
+            return a.timestamp < b.timestamp ? -1 : 1;
+      });
+
+      completeTimeline = this.utilities.removeFrom(completeTimeline,{qHash: qHash});
+      let i = 0;
+      let postObj;
+      for(let p of completeTimeline){
+
+        if(i == 0){
+          latestRef = await this.coral.dag.set('/social/timeline/'+socialPubKey,p,{ storagePath: '/archive/social/timeline/transaction' });
+          postObj = p;
+        }
+        else{
+          latestRef = await this.coral.dag.add('/social/timeline/'+socialPubKey,p,{ storagePath: '/archive/social/timeline/transaction' });
+          postObj = p
+        }
+
+        i++;
+      }
+
+
+
+      if(typeof latestRef != 'undefined'){
+
+        try{
+          ipfs.pin.rm(qHash);
+        }catch(e){
+          console.log(e);
+        }
+
+
+        await this.propagate(latestRef, postObj);
+      }
+      else{
+        throw('delete failed')
+      }
+
+    }
 
 }
