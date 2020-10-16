@@ -32,6 +32,20 @@ export class QuestSocial {
   }
 
 
+   async getPubKeyFromDirectChannel(channel, index = 1){
+     let pubKey1 = channel.split('-----')[0].split('-')[1];
+     let pubKey2 = channel.split('-----')[0].split('-')[2];
+
+     if(await this.profile.isMyProfileId(pubKey1)){
+       let p = await this.profile.get(pubKey2);
+       return p['key']['pubKey'];
+     }
+     else{
+       let p = await this.profile.get(pubKey1);
+       return p['key']['pubKey'];
+     }
+  };
+
   async getAliasFromDirectChannel(channel, index = 1){
     let pubKey = channel.split('-----')[0].split('-')[index];
     let p = await this.profile.get(pubKey);
