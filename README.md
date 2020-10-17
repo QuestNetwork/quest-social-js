@@ -1,5 +1,5 @@
 # Quest Social JS
-> Lower level functionality for [QD Social TS](https://github.com/QuestNetwork/qd-social-ts)
+> A Decentralized Social Protocol for Dolphin and Coral.
 
 ## Lead Maintainer
 
