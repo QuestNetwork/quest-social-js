@@ -102,18 +102,50 @@ Returns an array with the resolved timeline of the requested peer.
 let timeline = await <os>.social.timeline.get(socialPubKey)){
 ```
 
-#### post
+### post
 
-##### social.timeline.post.delete(qHash)
+#### social.timeline.post.delete(qHash)
 [![Social](https://img.shields.io/badge/process-Social-green)](https://github.com/QuestNetwork/quest-social-js) [![Bee](https://img.shields.io/badge/process-Bee-yellow)](https://github.com/QuestNetwork/quest-bee-js) [![Ocean](https://img.shields.io/badge/process-Ocean-blue)](https://github.com/QuestNetwork/quest-ocean-js)
 
 Deletes a post by its qHash.
 
 ```javascript
-<os>.social.timeline.post.delete(qHash);
+async <os>.social.timeline.post.delete(qHash);
 ```
-  
-  
+
+#### async social.timeline.post.new(postObj = { content: '', socialPubKey:'' })
+Creates a new post on the timeline of the owner of the socialPubKey.
+
+```javascript
+<os>.social.timeline.post.new(postObj = { content: '', socialPubKey:'' })
+```
+
+#### propagate(latestRef, postObj)
+Propagates the latest timeline ref across channels.
+
+```javascript
+async <os>.social.timeline.post.propagate(latestRef, postObj)
+```
+
+
+### agent
+
+#### async social.timeline.agent.sync(pubKey = "all", config = { limit: 5,  storagePath: '/archive/social/timeline/transaction' })
+[![Social](https://img.shields.io/badge/process-Social-green)](https://github.com/QuestNetwork/quest-social-js) [![Bee](https://img.shields.io/badge/process-Bee-yellow)](https://github.com/QuestNetwork/quest-bee-js) [![Ocean](https://img.shields.io/badge/process-Ocean-blue)](https://github.com/QuestNetwork/quest-ocean-js)
+
+Syncs the timeline for a given pubkey or all cached pubkeys.
+
+```javascript
+async <os>.social.timeline.agent.sync(pubKey);
+```
+
+#### async social.timeline.agent.groupTimeline(timeline,  limit = 0)
+Creates a new post on the timeline of the owner of the socialPubKey.
+
+```javascript
+<os>.social.timeline.agent.groupTimeline(timeline,  limit = 0)
+```
+
 
 ## Support Us
 Please consider supporting us, so that we can build a non-profit for this project (ツ)
