@@ -15,10 +15,10 @@
     "build": "rm -rf dist && babel . --out-dir dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files"
     },
   "dependencies": {
-    "rxjs": "6.6.3",
+    "rxjs": "6.5.5",
     "uuid": "8.3.0",
-    "@questnetwork/quest-crypto-js": "../quest-crypto-js",
-    "@questnetwork/quest-utilities-js": "../quest-utilities-js"
+    "@questnetwork/quest-crypto-js": "^0.9.4",
+    "@questnetwork/quest-utilities-js": "^0.9.4"
 
   },
   "devDependencies": {
