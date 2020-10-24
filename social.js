@@ -122,14 +122,19 @@ export class QuestSocial {
  async getMentionItems(channel){
    let results = [];
    // get channel pubkeys of participants
-   let fullParticipantList = this.dolphin.getChannelParticipantList(channel)['cList'].split(',');
-   if(typeof fullParticipantList['cList'] == 'undefined'){
-     return [];
+   try{
+     let fullParticipantList = this.dolphin.getChannelParticipantList(channel)['cList'].split(',');
+     console.log('quest-social-js: getMention:',fullParticipantList);
+     if(typeof fullParticipantList.length < 1){
+       return results;
+     }
    }
-
-   let participantCListArray = this.q.os.channel.getParticipantList(channel);
+     catch(e){
+       return results;
+     }
+   
    // get social pubkeys of participants
-   for(let chPubKey of participantCListArray){
+   for(let chPubKey of fullParticipantList){
      let p = this.channel.getSocialProfileForChannelPubKey(channel,chPubKey);
      if(typeof p['nick'] != 'undefined' && p['nick'].length > 0){
        results.push('<'+p['nick']+'|'+p['key']['pubKey']+'>');
