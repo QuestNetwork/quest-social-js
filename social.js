@@ -18,6 +18,7 @@ export class QuestSocial {
   async start(config){
 
     this.version = config['version'];
+    this.channel = config['dependencies']['channel']
     this.jsonSwarm = config['ipfs']['swarm'];
     this.electron = config['dependencies']['electronService'];
     this.bee = config['dependencies']['bee'];
@@ -122,9 +123,10 @@ export class QuestSocial {
  async getMentionItems(channel){
    let results = [];
    // get channel pubkeys of participants
+   let fullParticipantList = [];
    try{
-     let fullParticipantList = this.dolphin.getChannelParticipantList(channel)['cList'].split(',');
-     console.log('quest-social-js: getMention:',fullParticipantList);
+     fullParticipantList = this.dolphin.getChannelParticipantList(channel)['cList'].split(',');
+     // console.log('quest-social-js: getMention:',fullParticipantList);
      if(typeof fullParticipantList.length < 1){
        return results;
      }
@@ -132,7 +134,7 @@ export class QuestSocial {
      catch(e){
        return results;
      }
-   
+
    // get social pubkeys of participants
    for(let chPubKey of fullParticipantList){
      let p = this.channel.getSocialProfileForChannelPubKey(channel,chPubKey);
