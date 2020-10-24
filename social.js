@@ -137,7 +137,7 @@ export class QuestSocial {
 
    // get social pubkeys of participants
    for(let chPubKey of fullParticipantList){
-     let p = this.channel.getSocialProfileForChannelPubKey(channel,chPubKey);
+     let p = await this.getSocialProfileForChannelPubKey(channel,chPubKey);
      if(typeof p['nick'] != 'undefined' && p['nick'].length > 0){
        results.push('<'+p['nick']+'|'+p['key']['pubKey']+'>');
      }
