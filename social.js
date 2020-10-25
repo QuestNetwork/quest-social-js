@@ -146,12 +146,12 @@ export class QuestSocial {
      let p = await this.getSocialProfileForChannelPubKey(channel,chPubKey);
      if(typeof p['nick'] != 'undefined' && p['nick'].length > 0){
        mentionConfig.items.push(p['nick']);
-       mentionConfig.data.push({ socialPubKey: p['key']['pubKey'] });
+       mentionConfig.data.push({ socialPubKey: p['key']['pubKey'], displayName:p['nick']  });
 
      }
      else if(typeof p['alias'] != 'undefined' && p['alias'].length > 0 && p['alias'] != 'Anonymous'){
        mentionConfig.items.push(p['alias']);
-       mentionConfig.data.push({ socialPubKey: p['key']['pubKey'] });
+       mentionConfig.data.push({ socialPubKey: p['key']['pubKey'], displayName:p['alias'] });
      }
    }
 
