@@ -69,6 +69,34 @@ export class QuestSocial {
   };
 
 
+  async getDisplayName(socialPubKey, channel){
+    let chPubKey = await this.getChannelPubKey(socialPubKey,channel);
+    let p = await this.getSocialProfileForChannelPubKey(channel,chPubKey);
+    if(typeof p['nick'] !=  'undefined' && p['nick'].length > 0){
+      return p['nick']
+    }
+    else{
+      return p['alias'];
+    }
+
+  }
+
+   async getChannelPubKey(socialPubKey, channel){
+
+         let links = this.bee.comb.get('/social/links');
+         let pubKeys = Object.keys(links);
+
+         for(let chPubKey of pubKeys){
+           let profileId = links[chPubKey][0];
+           if(profileId == socialPubKey){
+             return chPubKey;
+           }
+         }
+
+
+
+
+  }
 
   async getSocialProfileForChannelPubKey(channel,chPubKey){
 
