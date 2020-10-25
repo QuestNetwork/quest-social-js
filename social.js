@@ -120,34 +120,43 @@ export class QuestSocial {
 
 
 
- async getMentionItems(channel){
-   let results = [];
+ async getMentionConfig(channel){
+   let mentionConfig = {
+    items: [],
+    data: [],
+    triggerChar: "@",
+  };
+
+
    // get channel pubkeys of participants
    let fullParticipantList = [];
    try{
      fullParticipantList = this.dolphin.getChannelParticipantList(channel)['cList'].split(',');
      // console.log('quest-social-js: getMention:',fullParticipantList);
      if(typeof fullParticipantList.length < 1){
-       return results;
+       return mentionConfig;
      }
    }
      catch(e){
-       return results;
+       return mentionConfig;
      }
 
    // get social pubkeys of participants
    for(let chPubKey of fullParticipantList){
      let p = await this.getSocialProfileForChannelPubKey(channel,chPubKey);
      if(typeof p['nick'] != 'undefined' && p['nick'].length > 0){
-       results.push('<'+p['nick']+'|'+p['key']['pubKey']+'>');
+       mentionConfig.items.push(p['nick']);
+       mentionConfig.data.push({ socialPubKey: p['key']['pubKey'] });
+
      }
      else if(typeof p['alias'] != 'undefined' && p['alias'].length > 0 && p['alias'] != 'Anonymous'){
-       results.push('<'+p['alias']+'|'+p['key']['pubKey']+'>');
+       mentionConfig.items.push(p['alias']);
+       mentionConfig.data.push({ socialPubKey: p['key']['pubKey'] });
      }
    }
 
    // get display names of participants
-   return results;
+   return mentionConfig;
  }
 
 
